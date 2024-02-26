@@ -4,59 +4,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
+    <title>Chat App</title>
     <style>
-        #messages {
-            max-height: 300px;
-            overflow-y: auto;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
-        #emoji-menu {
-            display: none;
-            position: absolute;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 5px;
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #messages {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        #messages li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 8px;
+        }
+
+        #messages li img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
         }
 
         .emoji-button {
             cursor: pointer;
         }
+
+        #emoji-menu {
+            display: none;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 5px;
+            width: calc(100% - 20px); /* Ancho igual al de los botones */
+            box-sizing: border-box;
+        }
     </style>
 </head>
 
 <body>
-    <div id="username-container">
-        <input type="text" id="username" placeholder="Enter your username">
-        <button onclick="joinChat()">Join Chat</button>
-    </div>
+    <div class="container">
+        <div id="username-container">
+            <input type="text" id="username" placeholder="Enter your username">
+            <button onclick="joinChat()">Join Chat</button>
+        </div>
 
-    <div id="chat-container" style="display:none;">
-        <ul id="messages"></ul>
-        <input id="m" autocomplete="off" />
-        <button onclick="toggleEmojiMenu()">Emoji</button>
-        <button onclick="sendMessage()">Send</button>
-        <input type="file" id="file-input" accept="image/*">
-        <div id="emoji-menu">
-            <span class="emoji-button" onclick="insertEmoji('&#128512;')">&#128512;</span> <!-- 😀 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128515;')">&#128515;</span> <!-- 😃 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128516;')">&#128516;</span> <!-- 😄 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128513;')">&#128513;</span> <!-- 😁 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128518;')">&#128518;</span> <!-- 😆 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128517;')">&#128517;</span> <!-- 😅 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128514;')">&#128514;</span> <!-- 😂 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128578;')">&#128578;</span> <!-- 🙂 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128579;')">&#128579;</span> <!-- 🙃 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128521;')">&#128521;</span> <!-- 😉 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128522;')">&#128522;</span> <!-- 😊 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128519;')">&#128519;</span> <!-- 😇 -->
-            <span class="emoji-button" onclick="insertEmoji('&#129392;')">&#129392;</span> <!-- 🥰 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128525;')">&#128525;</span> <!-- 😍 -->
-            <span class="emoji-button" onclick="insertEmoji('&#129321;')">&#129321;</span> <!-- 🤩 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128536;')">&#128536;</span> <!-- 😘 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128537;')">&#128537;</span> <!-- 😗 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128538;')">&#128538;</span> <!-- 😚 -->
-            <span class="emoji-button" onclick="insertEmoji('&#128539;')">&#128539;</span> <!-- 😙 -->
+        <div id="chat-container" style="display:none;">
+            <ul id="messages"></ul>
+            <input id="m" type="text" autocomplete="off" placeholder="Type your message...">
+            <input id="file-input" type="file" accept="image/*">
+            <button onclick="toggleEmojiMenu()">😊</button>
+            <div id="emoji-menu">
+                <span class="emoji-button" onclick="insertEmoji('&#128512;')">&#128512;</span> <!-- 😀 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128515;')">&#128515;</span> <!-- 😃 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128516;')">&#128516;</span> <!-- 😄 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128513;')">&#128513;</span> <!-- 😁 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128518;')">&#128518;</span> <!-- 😆 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128517;')">&#128517;</span> <!-- 😅 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128514;')">&#128514;</span> <!-- 😂 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128578;')">&#128578;</span> <!-- 🙂 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128579;')">&#128579;</span> <!-- 🙃 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128521;')">&#128521;</span> <!-- 😉 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128522;')">&#128522;</span> <!-- 😊 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128519;')">&#128519;</span> <!-- 😇 -->
+                <span class="emoji-button" onclick="insertEmoji('&#129392;')">&#129392;</span> <!-- 🥰 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128525;')">&#128525;</span> <!-- 😍 -->
+                <span class="emoji-button" onclick="insertEmoji('&#129321;')">&#129321;</span> <!-- 🤩 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128536;')">&#128536;</span> <!-- 😘 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128537;')">&#128537;</span> <!-- 😗 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128538;')">&#128538;</span> <!-- 😚 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128539;')">&#128539;</span> <!-- 😙 -->
+            </div>
+            <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
@@ -87,7 +138,7 @@
                 };
                 reader.readAsDataURL(file);
 
-                // Resetear el valor del campo de entrada de tipo file
+                // Reset the file input field
                 input.value = null;
             } else {
                 var message = document.getElementById('m').value;
@@ -108,7 +159,7 @@
 
         socket.on('image', function (data) {
             var item = document.createElement('li');
-            item.innerHTML = `<strong>${data.username}:</strong> <br><img src="${data.image}" alt="image" style="max-width: 200px; max-height: 200px;">`;
+            item.innerHTML = `<strong>${data.username}:</strong> <br><img src="${data.image}" alt="image">`;
             document.getElementById('messages').appendChild(item);
         });
 

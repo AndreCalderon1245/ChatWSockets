@@ -36,7 +36,7 @@ def handleImage(data):
     username = data['username']
     image = data['image']
     time = datetime.now().strftime('%H:%M:%S')
-    send(f'<strong>{username}:</strong> <br><img src="{image}" alt="image" style="max-width: 200px; max-height: 200px;">', broadcast=True)
+    send(f'{time} - <strong>{username}:</strong> <br><img src="{image}" alt="image" style="max-width: 200px; max-height: 200px;">', broadcast=True)
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -48,4 +48,4 @@ def handle_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, host='192.168.0.28')
