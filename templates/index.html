@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,39 +10,53 @@
             max-height: 300px;
             overflow-y: auto;
         }
+
         #emoji-menu {
             display: none;
             position: absolute;
-            top: 50px;
-            left: 0;
             background-color: #fff;
             border: 1px solid #ccc;
             padding: 5px;
         }
+
         .emoji-button {
             cursor: pointer;
         }
     </style>
 </head>
+
 <body>
     <div id="username-container">
         <input type="text" id="username" placeholder="Enter your username">
         <button onclick="joinChat()">Join Chat</button>
     </div>
-    
+
     <div id="chat-container" style="display:none;">
         <ul id="messages"></ul>
         <input id="m" autocomplete="off" />
         <button onclick="toggleEmojiMenu()">Emoji</button>
         <button onclick="sendMessage()">Send</button>
+        <input type="file" id="file-input" accept="image/*">
         <div id="emoji-menu">
-            <span class="emoji-button" onclick="insertEmoji('😊')">😊</span>
-            <span class="emoji-button" onclick="insertEmoji('❤️')">❤️</span>
-            <span class="emoji-button" onclick="insertEmoji('👍')">👍</span>
-            <span class="emoji-button" onclick="insertEmoji('😂')">😂</span>
-            <span class="emoji-button" onclick="insertEmoji('😎')">😎</span>
-            <span class="emoji-button" onclick="insertEmoji('👋')">👋</span>
-            <span class="emoji-button" onclick="insertEmoji('🎉')">🎉</span>
+            <span class="emoji-button" onclick="insertEmoji('&#128512;')">&#128512;</span> <!-- 😀 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128515;')">&#128515;</span> <!-- 😃 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128516;')">&#128516;</span> <!-- 😄 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128513;')">&#128513;</span> <!-- 😁 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128518;')">&#128518;</span> <!-- 😆 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128517;')">&#128517;</span> <!-- 😅 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128514;')">&#128514;</span> <!-- 😂 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128578;')">&#128578;</span> <!-- 🙂 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128579;')">&#128579;</span> <!-- 🙃 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128521;')">&#128521;</span> <!-- 😉 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128522;')">&#128522;</span> <!-- 😊 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128519;')">&#128519;</span> <!-- 😇 -->
+            <span class="emoji-button" onclick="insertEmoji('&#129392;')">&#129392;</span> <!-- 🥰 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128525;')">&#128525;</span> <!-- 😍 -->
+            <span class="emoji-button" onclick="insertEmoji('&#129321;')">&#129321;</span> <!-- 🤩 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128536;')">&#128536;</span> <!-- 😘 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128537;')">&#128537;</span> <!-- 😗 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128538;')">&#128538;</span> <!-- 😚 -->
+            <span class="emoji-button" onclick="insertEmoji('&#128539;')">&#128539;</span> <!-- 😙 -->
         </div>
     </div>
 
@@ -49,30 +64,54 @@
     <script>
         var socket = io();
         var username;
-    
+
         function joinChat() {
             username = document.getElementById('username').value;
             if (username.trim() !== '') {
-                socket.emit('join', {username: username});
+                socket.emit('join', { username: username });
                 document.getElementById('username-container').style.display = 'none';
                 document.getElementById('chat-container').style.display = 'block';
             } else {
                 alert('Please enter a username');
             }
         }
-    
+
         function sendMessage() {
-            var message = document.getElementById('m').value;
-            socket.emit('message', `${username}~${message}`);
-            document.getElementById('m').value = '';
+            var input = document.getElementById('file-input');
+            var file = input.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    var image = event.target.result;
+                    socket.emit('image', { username: username, image: image });
+                };
+                reader.readAsDataURL(file);
+
+                // Resetear el valor del campo de entrada de tipo file
+                input.value = null;
+            } else {
+                var message = document.getElementById('m').value;
+                if (message.trim() !== '') {
+                    socket.emit('message', `${username}~${message}`);
+                    document.getElementById('m').value = '';
+                } else {
+                    alert('Please enter a message');
+                }
+            }
         }
-    
-        socket.on('message', function(msg) {
+
+        socket.on('message', function (msg) {
             var item = document.createElement('li');
-            item.innerHTML = msg; // Cambia textContent por innerHTML
+            item.innerHTML = msg;
             document.getElementById('messages').appendChild(item);
         });
-    
+
+        socket.on('image', function (data) {
+            var item = document.createElement('li');
+            item.innerHTML = `<strong>${data.username}:</strong> <br><img src="${data.image}" alt="image" style="max-width: 200px; max-height: 200px;">`;
+            document.getElementById('messages').appendChild(item);
+        });
+
         function toggleEmojiMenu() {
             var menu = document.getElementById('emoji-menu');
             if (menu.style.display === 'block') {
@@ -81,10 +120,11 @@
                 menu.style.display = 'block';
             }
         }
-    
+
         function insertEmoji(emoji) {
             document.getElementById('m').value += emoji;
         }
     </script>
 </body>
+
 </html>

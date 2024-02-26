@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from flask_socketio import SocketIO, send, disconnect
+from flask_socketio import SocketIO, send
 from datetime import datetime
 
 app = Flask(__name__)
@@ -29,9 +29,15 @@ def handleMessage(msg):
     print('Message: ' + msg)
     username, message = msg.split('~', 1)
     time = datetime.now().strftime('%H:%M:%S')
-    send(f'{time} - {username}: {message}', broadcast=True)
+    send(f'{time} - <strong>{username}:</strong> {message}', broadcast=True)
 
-# Handle disconnect event
+@socketio.on('image')
+def handleImage(data):
+    username = data['username']
+    image = data['image']
+    time = datetime.now().strftime('%H:%M:%S')
+    send(f'<strong>{username}:</strong> <br><img src="{image}" alt="image" style="max-width: 200px; max-height: 200px;">', broadcast=True)
+
 @socketio.on('disconnect')
 def handle_disconnect():
     disconnected_user = [user for user in active_users if user[0] == request.sid]
@@ -42,4 +48,4 @@ def handle_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='192.168.0.28')
+    socketio.run(app)
