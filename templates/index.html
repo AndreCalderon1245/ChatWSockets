@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #messages {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        #messages li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 8px;
+        }
+
+        #messages li img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .emoji-button {
+            cursor: pointer;
+        }
+
+        #emoji-menu {
+            display: none;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 5px;
+            left: 680px;
+            right: 730px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="username-container">
+            <input type="text" id="username" placeholder="Enter your username">
+            <button onclick="joinChat()">Join Chat</button>
+        </div>
+
+        <div id="chat-container" style="display:none;">
+            <ul id="messages"></ul>
+            <input id="m" type="text" autocomplete="off" placeholder="Type your message...">
+            <input id="file-input" type="file" accept="image/*">
+            <button onclick="toggleEmojiMenu()">😊</button>
+            <button onclick="sendMessage()">Send</button>
+            <div id="emoji-menu">
+                <span class="emoji-button" onclick="insertEmoji('&#128512;')">&#128512;</span> <!-- 😀 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128515;')">&#128515;</span> <!-- 😃 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128516;')">&#128516;</span> <!-- 😄 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128513;')">&#128513;</span> <!-- 😁 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128518;')">&#128518;</span> <!-- 😆 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128517;')">&#128517;</span> <!-- 😅 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128514;')">&#128514;</span> <!-- 😂 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128578;')">&#128578;</span> <!-- 🙂 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128579;')">&#128579;</span> <!-- 🙃 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128521;')">&#128521;</span> <!-- 😉 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128522;')">&#128522;</span> <!-- 😊 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128519;')">&#128519;</span> <!-- 😇 -->
+                <span class="emoji-button" onclick="insertEmoji('&#129392;')">&#129392;</span> <!-- 🥰 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128525;')">&#128525;</span> <!-- 😍 -->
+                <span class="emoji-button" onclick="insertEmoji('&#129321;')">&#129321;</span> <!-- 🤩 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128536;')">&#128536;</span> <!-- 😘 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128537;')">&#128537;</span> <!-- 😗 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128538;')">&#128538;</span> <!-- 😚 -->
+                <span class="emoji-button" onclick="insertEmoji('&#128539;')">&#128539;</span> <!-- 😙 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+    <script>
+        var socket = io();
+        var username;
+
+        function joinChat() {
+            username = document.getElementById('username').value;
+            if (username.trim() !== '') {
+                socket.emit('join', { username: username });
+                document.getElementById('username-container').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'block';
+            } else {
+                alert('Please enter a username');
+            }
+        }
+
+        function sendMessage() {
+            var input = document.getElementById('file-input');
+            var file = input.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    var image = event.target.result;
+                    socket.emit('image', { username: username, image: image });
+                };
+                reader.readAsDataURL(file);
+
+                // Reset the file input field
+                input.value = null;
+            } else {
+                var message = document.getElementById('m').value;
+                if (message.trim() !== '') {
+                    socket.emit('message', `${username}~${message}`);
+                    document.getElementById('m').value = '';
+                } else {
+                    alert('Please enter a message');
+                }
+            }
+        }
+
+        socket.on('message', function (msg) {
+            var messagesList = document.getElementById('messages');
+            var isScrolledToBottom = messagesList.scrollHeight - messagesList.clientHeight <= messagesList.scrollTop + 1;
+
+            var item = document.createElement('li');
+            item.innerHTML = msg;
+            messagesList.appendChild(item);
+
+            if (isScrolledToBottom) {
+                messagesList.scrollTop = messagesList.scrollHeight;
+            }
+        });
+
+        function toggleEmojiMenu() {
+            var menu = document.getElementById('emoji-menu');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'block';
+            }
+        }
+
+        function insertEmoji(emoji) {
+            document.getElementById('m').value += emoji;
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var inputUsername = document.getElementById("username");
+            var inputMessage = document.getElementById("m");
+
+            inputUsername.addEventListener("keydown", function (event) {
+                if (event.keyCode === 13) { // 13 es el código de la tecla "Enter"
+                    event.preventDefault(); // Evita que se genere un salto de línea en el input
+                    joinChat(); // Llama a la función joinChat al presionar Enter en el campo de nombre de usuario
+                }
+            });
+
+            inputMessage.addEventListener("keydown", function (event) {
+                if (event.keyCode === 13) { // 13 es el código de la tecla "Enter"
+                    event.preventDefault(); // Evita que se genere un salto de línea en el input
+                    sendMessage(); // Llama a la función sendMessage al presionar Enter en el campo de mensaje
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
